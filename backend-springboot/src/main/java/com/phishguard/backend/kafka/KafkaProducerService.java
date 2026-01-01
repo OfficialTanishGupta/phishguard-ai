@@ -15,6 +15,6 @@ public class KafkaProducerService {
     }
 
     public void sendMessage(String message) {
-        kafkaTemplate.send(TOPIC, message);
+        kafkaTemplate.send("user.real.behavior", message);
     }
 }
