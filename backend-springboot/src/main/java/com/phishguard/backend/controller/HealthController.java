@@ -4,6 +4,10 @@ import com.phishguard.backend.ai.FakeInterestGenerator;
 import com.phishguard.backend.kafka.KafkaConsumerService;
 import com.phishguard.backend.kafka.KafkaProducerService;
 import com.phishguard.backend.model.UserBehavior;
+import com.phishguard.backend.model.BehaviorEvent;
+import com.phishguard.backend.service.BehaviorEventService;
+
+import java.time.LocalDateTime;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,14 +22,17 @@ public class HealthController {
     private final KafkaProducerService kafkaProducerService;
     private final KafkaConsumerService kafkaConsumerService;
     private final FakeInterestGenerator fakeInterestGenerator;
+    private final BehaviorEventService behaviorEventService;
 
-    // ✅ SINGLE constructor (correct dependency injection)
+
     public HealthController(KafkaProducerService kafkaProducerService,
                             KafkaConsumerService kafkaConsumerService,
-                            FakeInterestGenerator fakeInterestGenerator) {
+                            FakeInterestGenerator fakeInterestGenerator,
+                            BehaviorEventService behaviorEventService) {
         this.kafkaProducerService = kafkaProducerService;
         this.kafkaConsumerService = kafkaConsumerService;
         this.fakeInterestGenerator = fakeInterestGenerator;
+        this.behaviorEventService = behaviorEventService;
     }
 
     @GetMapping("/health")
@@ -45,14 +52,21 @@ public class HealthController {
         String fakeInterest =
                 fakeInterestGenerator.generateFakeInterest(behavior.getRealInterest());
 
-        String kafkaMessage =
-                "User=" + behavior.getUserId() +
-                        ", Platform=" + behavior.getPlatform() +
-                        ", RealInterest=" + behavior.getRealInterest() +
-                        ", FakeInterest=" + fakeInterest;
+        BehaviorEvent event = new BehaviorEvent(
+                behavior.getUserId(),
+                behavior.getPlatform(),
+                behavior.getRealInterest(),
+                fakeInterest,
+                LocalDateTime.now()
+        );
 
-        kafkaProducerService.sendMessage(kafkaMessage);
+        // Save to MongoDB
+        behaviorEventService.saveEvent(event);
 
-        return "Behavior processed with fake interest generation";
+        // Send to Kafka
+        kafkaProducerService.sendMessage(event.toString());
+
+        return "Behavior saved to MongoDB and streamed to Kafka";
     }
+
 }

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class KafkaProducerService {
 
-    private static final String TOPIC = "user.real.behavior";
+    public static final String TOPIC = "phishguard-user-behavior";
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
@@ -15,6 +15,6 @@ public class KafkaProducerService {
     }
 
     public void sendMessage(String message) {
-        kafkaTemplate.send("user.real.behavior", message);
+        kafkaTemplate.send(TOPIC, message);
     }
 }
