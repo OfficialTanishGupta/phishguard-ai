@@ -1,19 +1,19 @@
 package com.phishguard.backend.service;
 
-import com.phishguard.backend.model.BehaviorEvent;
-import com.phishguard.backend.repository.BehaviorEventRepository;
+import com.phishguard.backend.model.SyntheticBehaviorEvent;
+import com.phishguard.backend.repository.SyntheticBehaviorRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BehaviorEventService {
 
-    private final BehaviorEventRepository repository;
+    private final SyntheticBehaviorRepository repository;
 
-    public BehaviorEventService(BehaviorEventRepository repository) {
+    public BehaviorEventService(SyntheticBehaviorRepository repository) {
         this.repository = repository;
     }
 
-    public void saveEvent(BehaviorEvent event) {
+    public void saveSyntheticEvent(SyntheticBehaviorEvent event) {
         repository.save(event);
     }
 }

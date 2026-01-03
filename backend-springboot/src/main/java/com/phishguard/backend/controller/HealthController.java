@@ -4,16 +4,12 @@ import com.phishguard.backend.ai.FakeInterestGenerator;
 import com.phishguard.backend.kafka.KafkaConsumerService;
 import com.phishguard.backend.kafka.KafkaProducerService;
 import com.phishguard.backend.model.UserBehavior;
-import com.phishguard.backend.model.BehaviorEvent;
+import com.phishguard.backend.model.SyntheticBehaviorEvent;
 import com.phishguard.backend.service.BehaviorEventService;
 
+import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDateTime;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @RestController
@@ -23,7 +19,6 @@ public class HealthController {
     private final KafkaConsumerService kafkaConsumerService;
     private final FakeInterestGenerator fakeInterestGenerator;
     private final BehaviorEventService behaviorEventService;
-
 
     public HealthController(KafkaProducerService kafkaProducerService,
                             KafkaConsumerService kafkaConsumerService,
@@ -46,27 +41,28 @@ public class HealthController {
         return kafkaConsumerService.getMessages();
     }
 
+    // ✅ SINGLE /behavior METHOD
     @PostMapping("/behavior")
     public String receiveBehavior(@RequestBody UserBehavior behavior) {
 
+        // Generate fake interest (AI v2)
         String fakeInterest =
                 fakeInterestGenerator.generateFakeInterest(behavior.getRealInterest());
 
-        BehaviorEvent event = new BehaviorEvent(
-                behavior.getUserId(),
-                behavior.getPlatform(),
-                behavior.getRealInterest(),
-                fakeInterest,
-                LocalDateTime.now()
-        );
+        // Create synthetic event (FAKE ONLY)
+        SyntheticBehaviorEvent syntheticEvent =
+                new SyntheticBehaviorEvent(
+                        behavior.getUserId(),
+                        fakeInterest,
+                        LocalDateTime.now()
+                );
 
-        // Save to MongoDB
-        behaviorEventService.saveEvent(event);
+        // Save ONLY fake behavior
+        behaviorEventService.saveSyntheticEvent(syntheticEvent);
 
-        // Send to Kafka
-        kafkaProducerService.sendMessage(event.toString());
+        // Send ONLY fake behavior to Kafka
+        kafkaProducerService.sendMessage(syntheticEvent.toString());
 
-        return "Behavior saved to MongoDB and streamed to Kafka";
+        return "Synthetic behavior generated and streamed";
     }
-
 }
