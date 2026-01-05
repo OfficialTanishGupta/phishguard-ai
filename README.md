@@ -1,30 +1,29 @@
-# PhishGuard AI 🔐
+# PhishGuard Android 🛡️
 
-AI-driven phishing behavior deception system that protects real user interests by generating AI-powered fake behavioral profiles using Kafka.
+PhishGuard is an Android privacy-protection application that masks real user interests by generating AI-driven fake behavioral signals while using selected apps.
 
-## Project Status
+## 🚀 Features
+- Foreground app detection (UsageStats)
+- User-selected app protection
+- Fake-interest AI engine (local simulation)
+- Foreground service with live notification
+- OEM-safe (works on OPPO / ColorOS / Android 16)
 
-🚧 In Progress – Initial Setup
+## 🧠 Architecture
+- UI (Jetpack Compose): control & transparency
+- Foreground Service: core protection logic
+- AI Engine: fake-interest generation
+- DataStore: user-selected apps
 
-## Planned Tech Stack
+## 📱 Current Status
+- Overlay-free (OEM compliant)
+- Notification-based protection indicator
+- AI engine ready for backend / Kafka integration
 
-- Spring Boot (Backend)
-- Apache Kafka (Event Streaming)
-- MongoDB (Database)
-- Python (AI/ML from scratch)
-- Next.js (Frontend – Mobile & Desktop)
+## 🔮 Next Steps
+- Spring Boot API integration
+- Kafka streaming
+- Advanced AI context modeling
 
-## Core Idea
-
-Instead of only detecting phishing attacks, this system proactively deceives attackers by exposing AI-generated fake interest profiles while keeping real user data private.
-
-## 🏗️ System Architecture
-
-![PhishGuard AI Architecture](docs/architecture.png)
-
-## Modules
-
-- backend-springboot
-- ai-service-python
-- frontend-nextjs
-- docs
+---
+Built as part of an AI/ML security learning project.
